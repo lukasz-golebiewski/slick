@@ -92,9 +92,9 @@ object QueryCompiler {
     Phase.inferTypes,
     Phase.expandTables,
     Phase.forceOuterBinds,
-    Phase.createResultSetMapping,
     // Convert to column form
     Phase.expandSums,
+    Phase.createResultSetMapping,
     Phase.expandConditionals,
     Phase.expandRecords,
     Phase.flattenProjections,

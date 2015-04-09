@@ -132,7 +132,9 @@ class ExpandSums extends Phase {
 
   /** Create a SilentCast call unless the type already matches */
   def silentCast(tpe: Type, n: Node): Node = n match {
-    case LiteralNode(None) :@ OptionType(ScalaBaseType.nullType) => buildMultiColumnNone(tpe)
+    case LiteralNode(None) :@ OptionType(ScalaBaseType.nullType) =>
+      logger.debug("Building multi-column None for type", tpe)
+      buildMultiColumnNone(tpe)
     case n :@ tpe2 if tpe2 == tpe => n
     case n => Library.SilentCast.typed(tpe, n)
   }
@@ -142,6 +144,7 @@ class ExpandSums extends Phase {
     case ProductType(ch) => ProductNode(ch.map(buildMultiColumnNone))
     case StructType(ch) => StructNode(ch.map { case (sym, t) => (sym, buildMultiColumnNone(t)) })
     case OptionType(ch) => LiteralNode(tpe, None)
+    case t: MappedScalaType => TypeMapping(buildMultiColumnNone(t.baseType), t.mapper, t.classTag)
     case t => throw new SlickException("Unexpected non-Option type in multi-column None")
   }).nodeTypedOrCopy(tpe)
 
